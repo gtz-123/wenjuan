@@ -3,6 +3,13 @@ import qrcode
 from io import BytesIO
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from pyairtable import Table
+
+API_KEY = "你的Airtable API Key"
+BASE_ID = "你的Base ID"
+TABLE_NAME = "你的表名"
+
+table = Table(API_KEY, BASE_ID, TABLE_NAME)
 
 st.set_page_config(
     page_title="调查问卷",
