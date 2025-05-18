@@ -132,7 +132,7 @@ if st.button("提交"):
 # 显示历史内容
 import pandas as pd
 records = table.all()
-st.info(f"当前已填写人数：{len(records)}")
+st.info(f"num：{len(records)}")
 if records:
     df = pd.DataFrame([r['fields'] for r in records])
     st.dataframe(df)
