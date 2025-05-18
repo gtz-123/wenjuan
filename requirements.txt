@@ -5,3 +5,4 @@ gspread
 oauth2client
 pandas
 pyairtable
+pyairtable>=1.3.0
