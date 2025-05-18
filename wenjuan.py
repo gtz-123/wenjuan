@@ -1,6 +1,8 @@
 import streamlit as st
 import qrcode
 from io import BytesIO
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 st.set_page_config(
     page_title="调查问卷",
@@ -14,6 +16,9 @@ st.markdown("""
 您好！我是河北石油职业技术大学的学生，为了解在校生对五四运动对新时代中国青年的影响的相关内容我设计了本问卷。问卷采用匿名形式，数据仅用于学术研究。请根据实际情况作答，感谢您的支持！
 
 本问卷共20题，含选择题和开放式问题。答题无时间限制，感谢您的耐心参与！
+其他说明
+1.您的意见对我非常重要，再次感谢您抽出宝贵的时间完成本次问卷。
+2.本调查以不记名方式进行，我将依据国家统计法对统计资料保密，如有疑问，可联系:XXX(电话/邮箱)。
 """)
 
 st.header("一、基础认知类")
@@ -113,12 +118,24 @@ q20 = st.text_area(
     "20. 对于如何更好地发挥五四运动精神对新时代中国青年的引领作用，您还有哪些建议？"
 )
 
+# 认证
+scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_name('your-credentials.json', scope)
+client = gspread.authorize(creds)
+sheet = client.open('你的表格名').sheet1
+
+# 统计已填写人数
+num_responses = len(sheet.get_all_values()) - 1  # 减去表头
+st.info(f"当前已填写人数：{num_responses}")
+
+# 提交时写入
 if st.button("提交"):
     st.success("感谢您的填写！")
     st.write("你的答卷：")
     responses = [q1, q2, q3, q4, q5, q6,q7,q8,q9,q10,q11,q12,q13,q14,q15,q16,q17,q18,q19,q20]
     for idx, response in enumerate(responses, 1):
         st.write(f"问题{idx}：{response}")
+    sheet.append_row(responses)
 
 
 
@@ -130,3 +147,13 @@ qr = qrcode.make(qr_url)
 buf = BytesIO()
 qr.save(buf)
 st.image(buf.getvalue(), caption="问卷二维码，手机扫码填写", width=200)
+
+st.divider()
+st.subheader("历史填写内容（仅展示前100条）")
+import pandas as pd
+all_data = sheet.get_all_values()
+if len(all_data) > 1:
+    df = pd.DataFrame(all_data[1:], columns=all_data[0])  # 第一行为表头
+    st.dataframe(df.head(100))  # 只展示前100条，防止数据过多卡顿
+else:
+    st.info("暂无历史填写内容。")
