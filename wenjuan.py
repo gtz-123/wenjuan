@@ -125,7 +125,7 @@ if st.button("提交"):
 # 生成二维码
 st.divider()
 st.subheader("手机扫码填写问卷")
-qr_url = "https://wenjuan-grbeaxblsr628uj3zj8cdu.streamlit.app/"  # 用Streamlit Cloud分配的网址
+qr_url = "https://wenjuan-5eapplaas4cylqrq4m7rtjq.streamlit.app/"  # 用Streamlit Cloud分配的网址
 qr = qrcode.make(qr_url)
 buf = BytesIO()
 qr.save(buf)
