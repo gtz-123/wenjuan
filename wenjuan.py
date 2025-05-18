@@ -124,17 +124,21 @@ q20 = st.text_area(
     "20. 对于如何更好地发挥五四运动精神对新时代中国青年的引领作用，您还有哪些建议？"
 )
 
-# 提交时写入
 if st.button("提交"):
-    data = {"q1": q1, "q2": q2, "q3": q3, "q4": q4, "q5": q5, "q6": q6, "q7": q7, "q8": q8, "q9": q9, "q10": q10, "q11": q11, "q12": q12, "q13": q13, "q14": q14, "q15": q15, "q16": q16, "q17": q17, "q18": q18, "q19": q19, "q20": q20}
+    data = {"q1": q1, "q2": q2, "q3": q3, "q4": q4, "q5": q5, "q6": q6, "q7": q7, "q8": q8, "q9": q9, "q10": q10,
+            "q11": q11, "q12": q12, "q13": q13, "q14": q14, "q15": q15, "q16": q16, "q17": q17, "q18": q18, "q19": q19, "q20": q20}
     table.create(data)
     st.success("感谢您的填写！")
 
 # 显示历史内容
+import pandas as pd
 records = table.all()
 st.info(f"当前已填写人数：{len(records)}")
-for record in records:
-    st.write(record['fields'])
+if records:
+    df = pd.DataFrame([r['fields'] for r in records])
+    st.dataframe(df)
+else:
+    st.write("暂无历史填写内容。")
 
 
 
