@@ -1,14 +1,7 @@
 import streamlit as st
 import qrcode
 from io import BytesIO
-from oauth2client.service_account import ServiceAccountCredentials
-from pyairtable import Table
-
-API_KEY = st.secrets["AIRTABLE_API_KEY"]
-BASE_ID = st.secrets["AIRTABLE_BASE_ID"]
-TABLE_NAME = "survey"
-
-table = Table(API_KEY, BASE_ID, TABLE_NAME)
+import pandas as pd
 
 st.set_page_config(
     page_title="调查问卷",
@@ -16,20 +9,10 @@ st.set_page_config(
     layout="wide"
 )
 st.title("五四运动对新时代中国青年的影响调研")
-st.markdown("""
-亲爱的同学：
-
-您好！我是河北石油职业技术大学的学生，为了解在校生对五四运动对新时代中国青年的影响的相关内容我设计了本问卷。问卷采用匿名形式，数据仅用于学术研究。请根据实际情况作答，感谢您的支持！
-
-本问卷共20题，含选择题和开放式问题。答题无时间限制，感谢您的耐心参与！
-其他说明
-1.您的意见对我非常重要，再次感谢您抽出宝贵的时间完成本次问卷。
-2.本调查以不记名方式进行，我将依据国家统计法对统计资料保密，如有疑问，可联系:XXX(电话/邮箱)。
-""")
 
 st.header("一、基础认知类")
-q1 = st.radio("1. 您是否了解五四运动的具体发生时间和主要历史事件？", ["是", "否"],index=None)
-q2 = st.radio("2. 您认为五四运动的核心精神内涵（爱国、进步、民主、科学）在当下社会是否依然重要？", ["是", "否"],index=None)
+q1 = st.radio("1. 您是否了解五四运动的具体发生时间和主要历史事件？", ["是", "否"], index=None)
+q2 = st.radio("2. 您认为五四运动的核心精神内涵（爱国、进步、民主、科学）在当下社会是否依然重要？", ["是", "否"], index=None)
 q3 = st.multiselect(
     "3. 您通过哪些渠道了解五四运动相关知识？（可多选）",
     ["学校历史课程", "网络媒体（短视频、文章等）", "红色影视作品", "纪念馆、博物馆参观", "长辈讲述", "其他"]
@@ -106,7 +89,7 @@ q16 = st.multiselect(
 )
 
 q17 = st.radio(
-    "17. 您认为五四精神在未来5-10年对中国青年的影响力会如何变化?",
+    "17. 您认为五四精神在未来 5 - 10 年对中国青年的影响力会如何变化?",
     ["影响力持续增强", "保持现状", "影响力逐渐减弱"],
     index=None
 )
@@ -124,28 +107,31 @@ q20 = st.text_area(
     "20. 对于如何更好地发挥五四运动精神对新时代中国青年的引领作用，您还有哪些建议？"
 )
 
+# 提交时写入 CSV 文件
 if st.button("提交"):
-    data = {"q1":q1,"q2":q2,"q3":q3,"q4":q4,"q5":q5,"q6":q6,"q7":q7,"q8":q8,"q9":q9,"q10":q10,"q11":q11,"q12":q12,"q13":q13,"q14":q14,"q15":q15,"q16":q16,"q17":q17,"q18":q18,"q19":q19,"q20":q20}
-    table.create(data)
+    data = {"q1": q1, "q2": q2, "q3": q3, "q4": q4, "q5": q5, "q6": q6, "q7": q7, "q8": q8, "q9": q9, "q10": q10,
+            "q11": q11, "q12": q12, "q13": q13, "q14": q14, "q15": q15, "q16": q16, "q17": q17, "q18": q18, "q19": q19, "q20": q20}
+    try:
+        df = pd.read_csv('survey.csv')
+        new_df = pd.DataFrame([data])
+        df = pd.concat([df, new_df], ignore_index=True)
+    except FileNotFoundError:
+        df = pd.DataFrame([data])
+    df.to_csv('survey.csv', index=False)
     st.success("感谢您的填写！")
 
-# 显示历史内容
-import pandas as pd
-records = table.all()
-st.info(f"num:{len(records)}")
-if records:
-    df = pd.DataFrame([r['fields'] for r in records])
+# 显示历史内容（表格形式）
+try:
+    df = pd.read_csv('survey.csv')
+    st.info(f"num:{len(df)}")
     st.dataframe(df)
-else:
+except FileNotFoundError:
     st.write("暂无历史填写内容。")
-
-
-
 
 # 生成二维码
 st.divider()
 st.subheader("手机扫码填写问卷")
-qr_url = "https://wenjuan-bst9iki6kkk6hvcuwmgzcb.streamlit.app/"  # 用Streamlit Cloud分配的网址
+qr_url = "https://wenjuan-qhqlt4po8vtcqrsvytdwdx.streamlit.app/"
 qr = qrcode.make(qr_url)
 buf = BytesIO()
 qr.save(buf)
