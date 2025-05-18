@@ -131,7 +131,7 @@ except FileNotFoundError:
 # 生成二维码
 st.divider()
 st.subheader("手机扫码填写问卷")
-qr_url = "https://wenjuan-qhqlt4po8vtcqrsvytdwdx.streamlit.app/"
+qr_url = "https://wenjuan-olbeuwobukyaqevjnfwfup.streamlit.app/"
 qr = qrcode.make(qr_url)
 buf = BytesIO()
 qr.save(buf)
