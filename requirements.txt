@@ -4,3 +4,4 @@ pillow
 gspread
 oauth2client
 pandas
+pyairtable
