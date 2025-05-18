@@ -4,8 +4,8 @@ from io import BytesIO
 from oauth2client.service_account import ServiceAccountCredentials
 from pyairtable import Table
 
-API_KEY = "你的Airtable API Key"
-BASE_ID = "你的Base ID"
+API_KEY = st.secrets["AIRTABLE_API_KEY"]
+BASE_ID = st.secrets["AIRTABLE_BASE_ID"]
 TABLE_NAME = "survey"
 
 table = Table(API_KEY, BASE_ID, TABLE_NAME)
