@@ -6,7 +6,7 @@ from pyairtable import Table
 
 API_KEY = "你的Airtable API Key"
 BASE_ID = "你的Base ID"
-TABLE_NAME = "你的表名"
+TABLE_NAME = "survey"
 
 table = Table(API_KEY, BASE_ID, TABLE_NAME)
 
